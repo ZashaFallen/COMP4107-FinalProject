@@ -5,8 +5,6 @@
 # The goal will be to get 4 files, encoder and decoder inputs for both training and testing.
 
 EN_WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz ' # space is included in whitelist
-EN_BLACKLIST = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\''
-# I believe this removes the punctuation from the input data, making training faster but results weaker.
 
 import numpy as np
 import tensorflow as tf
@@ -65,6 +63,18 @@ def verifyData(questions, answers):
     print(len(answers))
     print()
 
+'''
+remove anything that isn't in the vocabulary
+return str(pure en)
+'''
+def filter_data(questions, answers):
+    def filter_line(line):
+        return ''.join([ ch for ch in line if ch in EN_WHITELIST ])
+
+    questions = [ filter_line(line) for line in questions ]
+    answers = [ filter_line(line) for line in answers ]
+
+    return questions, answers
 
 def prep_data():
     lines, conv_lines = get_raw_data()
@@ -73,11 +83,11 @@ def prep_data():
     questions, answers = separate_questions_answers(convs, id2line)
     verifyData(questions, answers)
 
+    clean_questions, clean_answers = filter_data(questions, answers)
     # filter/clean data
         # remove unwanted characters
         # alter word format
         # filter out too long/short sentences
-
     # create a vocab dictionary which holds the frequency of words
     # remove rare words
 
