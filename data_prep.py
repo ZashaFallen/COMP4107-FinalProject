@@ -1,8 +1,6 @@
-# Notes from trying to figure out data processing:
 # Sources:
 # https://github.com/suriyadeepan/practical_seq2seq/blob/master/datasets/cornell_corpus/data.py
 # https://github.com/Currie32/Chatbot-from-Movie-Dialogue/blob/master/Chatbot_Attention.py
-# The goal will be to get 4 files, encoder and decoder inputs for both training and testing.
 
 EN_WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz ' # space is included in whitelist
 MAX_LINE_LENGTH = 16
@@ -19,7 +17,9 @@ import numpy as np
 import nltk
 import re
 
-# Load the raw data
+'''
+Load the raw data
+'''
 def get_raw_data():
     lines = open('raw_data/movie_lines.txt', encoding='utf-8', errors='ignore').read().split('\n')
     conv_lines = open('raw_data/movie_conversations.txt', encoding='utf-8', errors='ignore').read().split('\n')
@@ -32,7 +32,9 @@ def get_raw_data():
     return lines, conv_lines
 
 
-# Create a dictionary to map each line's id with its line
+'''
+Create a dictionary to map each line's id with its line
+'''
 def map_IDs_to_lines(lines):
     id2line = {}
     for line in lines:
@@ -42,7 +44,9 @@ def map_IDs_to_lines(lines):
     return id2line
 
 
-# Create a list of all of the conversations' lines' ids.
+'''
+Create a list of all of the conversations' lines' ids.
+'''
 def gather_conversation_IDs(conv_lines):
     convs = [ ]
     for line in conv_lines[:-1]:
@@ -52,7 +56,9 @@ def gather_conversation_IDs(conv_lines):
     return convs
 
 
-# Sort the sentences into questions (inputs) and answers (targets)
+'''
+Sort the sentences into questions (inputs) and answers (targets)
+'''
 def separate_questions_answers(convs, id2line):
     questions = []
     answers = []
@@ -63,6 +69,9 @@ def separate_questions_answers(convs, id2line):
     return questions, answers
 
 
+'''
+Print a portion of the data, to try and verify it is correct
+'''
 def verifyData(questions, answers):
     limit = 0
     for i in range(limit, limit+5):
@@ -119,7 +128,9 @@ def filter_data(questions, answers):
     return questions, answers
 
 
-# Sort the data by word length. This might speed up training
+'''
+Sort the data by word length. This might speed up training
+'''
 def sort_data(questions, answers):
     sorted_questions = []
     sorted_answers = []
@@ -133,6 +144,14 @@ def sort_data(questions, answers):
     return sorted_questions, sorted_answers
 
 
+'''
+Create a vocabulary frequency dictionary
+    - prune the least common words
+    - create index-to-word list
+    - create word-to-index dictionary
+    return index2word, word2index, freq_dist
+(maps each word to a unique integer)
+'''
 def get_frequency_distribution(tokenized_lines):
     # get frequency distribution
     freq_dist = nltk.FreqDist(itertools.chain(*tokenized_lines))
@@ -146,8 +165,10 @@ def get_frequency_distribution(tokenized_lines):
 
 
 '''
-filter based on number of unknowns (words not in vocabulary)
-filter out the worst sentences
+Filter the tokenized sentence lists.
+    - filter based on number of unknowns (words not in vocabulary)
+    - filter out the worst sentences
+    return filtered sentences
 '''
 def filter_unk(q_tokenized, a_tokenized, w2idx):
     filtered_q, filtered_a = [], []
@@ -166,11 +187,10 @@ def filter_unk(q_tokenized, a_tokenized, w2idx):
 
 
 '''
- create the final dataset :
-  - convert list of items to arrays of indices
-  - add zero padding
-      return ( [array_en([indices]), array_ta([indices]) )
-
+create the final dataset :
+    - convert list of items to arrays of indices
+    - add zero padding
+    return ( [array_en([indices]), array_ta([indices]) )
 '''
 def zero_pad(qtokenized, atokenized, w2idx):
     # num of rows
@@ -191,8 +211,8 @@ def zero_pad(qtokenized, atokenized, w2idx):
 
 
 '''
- replace words with indices in a sequence
-  replace with unknown if word not in lookup
+replace words with indices in a sequence
+    - replace with unknown if word not in lookup
     return [list of indices]
 '''
 def pad_seq(seq, lookup, maxlen):
@@ -203,6 +223,7 @@ def pad_seq(seq, lookup, maxlen):
         else:
             indices.append(lookup[UNK])
     return indices + [0]*(maxlen - len(seq))
+
 
 def prep_data():
     # read in the daraw data from the files
