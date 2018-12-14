@@ -8,6 +8,7 @@ EN_WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz ' # space is included in wh
 
 import numpy as np
 import tensorflow as tf
+import re
 
 # Load the raw data
 def get_raw_data():
@@ -22,7 +23,7 @@ def get_raw_data():
     return lines, conv_lines
 
 
-# Create a dictionary to map each line's id with its text
+# Create a dictionary to map each line's id with its line
 def map_IDs_to_lines(lines):
     id2line = {}
     for line in lines:
@@ -63,16 +64,42 @@ def verifyData(questions, answers):
     print(len(answers))
     print()
 
-'''
-remove anything that isn't in the vocabulary
-return str(pure en)
-'''
+
 def filter_data(questions, answers):
     def filter_line(line):
         return ''.join([ ch for ch in line if ch in EN_WHITELIST ])
+    def clean_line(line):
+        line = line.lower()
+        line = re.sub(r"i'm", "i am", line)
+        line = re.sub(r"he's", "he is", line)
+        line = re.sub(r"she's", "she is", line)
+        line = re.sub(r"it's", "it is", line)
+        line = re.sub(r"that's", "that is", line)
+        line = re.sub(r"what's", "that is", line)
+        line = re.sub(r"where's", "where is", line)
+        line = re.sub(r"how's", "how is", line)
+        line = re.sub(r"\'ll", " will", line)
+        line = re.sub(r"\'ve", " have", line)
+        line = re.sub(r"\'re", " are", line)
+        line = re.sub(r"\'d", " would", line)
+        line = re.sub(r"\'re", " are", line)
+        line = re.sub(r"won't", "will not", line)
+        line = re.sub(r"can't", "cannot", line)
+        line = re.sub(r"n't", " not", line)
+        line = re.sub(r"n'", "ng", line)
+        line = re.sub(r"'bout", "about", line)
+        line = re.sub(r"'til", "until", line)
+        return line
 
+    # Remove punctuation
     questions = [ filter_line(line) for line in questions ]
     answers = [ filter_line(line) for line in answers ]
+    # Remove contractions
+    questions = [ clean_line(line) for line in questions ]
+    answers = [ clean_line(line) for line in answers ]
+    # Remove sentences that are too long/too short
+    questions = [ line for line in questions if len(line.split) > 2 || len(line.split) < 15]
+    answers = [ line for line in answers if len(line.split) > 2 || len(line.split) < 15]
 
     return questions, answers
 
@@ -83,11 +110,8 @@ def prep_data():
     questions, answers = separate_questions_answers(convs, id2line)
     verifyData(questions, answers)
 
-    clean_questions, clean_answers = filter_data(questions, answers)
-    # filter/clean data
-        # remove unwanted characters
-        # alter word format
-        # filter out too long/short sentences
+    filtered_questions, filtered_answers = filter_data(questions, answers)
+
     # create a vocab dictionary which holds the frequency of words
     # remove rare words
 
