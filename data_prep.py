@@ -5,9 +5,18 @@
 # The goal will be to get 4 files, encoder and decoder inputs for both training and testing.
 
 EN_WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz ' # space is included in whitelist
+MAX_LINE_LENGTH = 16
+MIN_LINE_LENGTH = 2
+
+limit = {
+        'maxq' : 25,
+        'minq' : 2,
+        'maxa' : 25,
+        'mina' : 2
+}
 
 import numpy as np
-import tensorflow as tf
+import nltk
 import re
 
 # Load the raw data
@@ -65,6 +74,12 @@ def verifyData(questions, answers):
     print()
 
 
+'''
+filter and clean the dataset
+    - Remove punctuation
+    - Remove contractions
+    - Remove sentences that are too long/too short
+'''
 def filter_data(questions, answers):
     def filter_line(line):
         return ''.join([ ch for ch in line if ch in EN_WHITELIST ])
@@ -98,10 +113,96 @@ def filter_data(questions, answers):
     questions = [ clean_line(line) for line in questions ]
     answers = [ clean_line(line) for line in answers ]
     # Remove sentences that are too long/too short
-    questions = [ line for line in questions if len(line.split) > 2 || len(line.split) < 15]
-    answers = [ line for line in answers if len(line.split) > 2 || len(line.split) < 15]
+    questions = [ line for line in questions if len(line.split) >= MAX_LINE_LENGTH || len(line.split) <= MAX_LINE_LENGTH]
+    answers = [ line for line in answers if len(line.split) >= MIN_LINE_LENGTH || len(line.split) <= MAX_LINE_LENGTH]
 
     return questions, answers
+
+
+# Sort the data by word length. This might speed up training
+def sort_data(questions, answers):
+    sorted_questions = []
+    sorted_answers = []
+
+    for length in range(1, max_line_length+1):
+        for i in enumerate(questions_int):
+            if len(i[1]) == length:
+                sorted_questions.append(questions_int[i[0]])
+                sorted_answers.append(answers_int[i[0]])
+
+    return sorted_questions, sorted_answers
+
+
+def get_frequency_distribution(tokenized_lines):
+    # get frequency distribution
+    freq_dist = nltk.FreqDist(itertools.chain(*tokenized_lines))
+    # get vocabulary of 8000 most used words
+    vocab = freq_dist.most_common(8000)
+    # index2word
+    index2word = ['_'] + ['unk'] + [ x[0] for x in vocab ]
+    # word2index
+    word2index = dict([(w,i) for i,w in enumerate(index2word)] )
+    return index2word, word2index, freq_dist
+
+
+'''
+filter based on number of unknowns (words not in vocabulary)
+filter out the worst sentences
+'''
+def filter_unk(q_tokenized, a_tokenized, w2idx):
+    filtered_q, filtered_a = [], []
+
+    for q_line, a_line in zip(q_tokenized, a_tokenized):
+        unk_count_q = len([ word for word in q_line if w not in w2idx ])
+        unk_count_a = len([ word for word in a_line if w not in w2idx ])
+        if unk_count_a <= 2:
+            if unk_count_q > 0:
+                if unk_count_q/len(q_line) > 0.2:
+                    pass
+            filtered_q.append(q_line)
+            filtered_a.append(a_line)
+
+    return filtered_q, filtered_a
+
+
+'''
+ create the final dataset :
+  - convert list of items to arrays of indices
+  - add zero padding
+      return ( [array_en([indices]), array_ta([indices]) )
+
+'''
+def zero_pad(qtokenized, atokenized, w2idx):
+    # num of rows
+    data_len = len(qtokenized)
+
+    # numpy arrays to store indices
+    idx_q = np.zeros([data_len, limit['maxq']], dtype=np.int32)
+    idx_a = np.zeros([data_len, limit['maxa']], dtype=np.int32)
+
+    for i in range(data_len):
+        q_indices = pad_seq(qtokenized[i], w2idx, limit['maxq'])
+        a_indices = pad_seq(atokenized[i], w2idx, limit['maxa'])
+
+        idx_q[i] = np.array(q_indices)
+        idx_a[i] = np.array(a_indices)
+
+    return idx_q, idx_a
+
+
+'''
+ replace words with indices in a sequence
+  replace with unknown if word not in lookup
+    return [list of indices]
+'''
+def pad_seq(seq, lookup, maxlen):
+    indices = []
+    for word in seq:
+        if word in lookup:
+            indices.append(lookup[word])
+        else:
+            indices.append(lookup[UNK])
+    return indices + [0]*(maxlen - len(seq))
 
 def prep_data():
     lines, conv_lines = get_raw_data()
@@ -110,14 +211,44 @@ def prep_data():
     questions, answers = separate_questions_answers(convs, id2line)
     verifyData(questions, answers)
 
+    # filter and clean the data
     filtered_questions, filtered_answers = filter_data(questions, answers)
 
-    # create a vocab dictionary which holds the frequency of words
-    # remove rare words
+    # sort data by word length
+    sorted_questions, sorted_answers = sort_data(questions, answers)
 
-    # create two dictionaries (questions and answers) mapping each vocab word to a unique integer
-    # Add unique tokens to the dictionaries
-    # Create inverse int -> vocab dictionaries
+    # tokenize the data and get a word frequency dictionary
+    q_tokenized = [ [w.strip() for word in line.split() if word] for line in sorted_questions ]
+    a_tokenized = [ [w.strip() for word in line.split() if word] for line in sorted_answers ]
+    idx2w, w2idx, freq_dist = get_frequency_distribution(q_tokenized + a_tokenized)
 
-    # Add the end of sentence token to the end of every answer.
-    # ...
+    # filter out sentences with too many unknowns
+    qtokenized, atokenized = filter_unk(qtokenized, atokenized, w2idx)
+
+    # zero pad and create the final dataset
+    idx_q, idx_a = zero_pad(qtokenized, atokenized, w2idx)
+    np.save('idx_q.npy', idx_q)
+    np.save('idx_a.npy', idx_a)
+
+        # let us now save the necessary dictionaries
+    metadata = {
+            'w2idx' : w2idx,
+            'idx2w' : idx2w,
+            'limit' : limit,
+            'freq_dist' : freq_dist
+    }
+
+    # write to disk : data control dictionaries
+    with open('metadata.pkl', 'wb') as f:
+        pickle.dump(metadata, f)
+
+
+def load_data(PATH=''):
+    # read data control dictionaries
+    with open(PATH + 'metadata.pkl', 'rb') as f:
+        metadata = pickle.load(f)
+    # read numpy arrays
+    idx_q = np.load(PATH + 'idx_q.npy')
+    idx_a = np.load(PATH + 'idx_a.npy')
+
+    return metadata, idx_q, idx_a
