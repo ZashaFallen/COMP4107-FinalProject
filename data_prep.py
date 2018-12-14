@@ -205,17 +205,21 @@ def pad_seq(seq, lookup, maxlen):
     return indices + [0]*(maxlen - len(seq))
 
 def prep_data():
+    # read in the daraw data from the files
     lines, conv_lines = get_raw_data()
+    # get a dictionary to map each line's id with its line
     id2line = map_IDs_to_lines(lines)
+    # get a list of conversation IDs
     convs = gather_converstation_IDs(conv_lines)
+    # get a questions (inputs) array and an answers (targets) array
     questions, answers = separate_questions_answers(convs, id2line)
     verifyData(questions, answers)
-
+    print()
     # filter and clean the data
     filtered_questions, filtered_answers = filter_data(questions, answers)
-
     # sort data by word length
-    sorted_questions, sorted_answers = sort_data(questions, answers)
+    sorted_questions, sorted_answers = sort_data(filtered_questions, filtered_answers)
+    verifyData(sorted_questions, sorted_answers)
 
     # tokenize the data and get a word frequency dictionary
     q_tokenized = [ [w.strip() for word in line.split() if word] for line in sorted_questions ]
@@ -230,7 +234,7 @@ def prep_data():
     np.save('idx_q.npy', idx_q)
     np.save('idx_a.npy', idx_a)
 
-        # let us now save the necessary dictionaries
+    # save the dictionary metadata
     metadata = {
             'w2idx' : w2idx,
             'idx2w' : idx2w,
