@@ -13,9 +13,11 @@ limit = {
         'mina' : 2
 }
 
+import itertools
 import numpy as np
 import nltk
 import re
+import pickle
 
 '''
 Load the raw data
@@ -122,8 +124,8 @@ def filter_data(questions, answers):
     questions = [ clean_line(line) for line in questions ]
     answers = [ clean_line(line) for line in answers ]
     # Remove sentences that are too long/too short
-    questions = [ line for line in questions if len(line.split) >= MAX_LINE_LENGTH || len(line.split) <= MAX_LINE_LENGTH]
-    answers = [ line for line in answers if len(line.split) >= MIN_LINE_LENGTH || len(line.split) <= MAX_LINE_LENGTH]
+    questions = [ line for line in questions if len(line.split()) >= MIN_LINE_LENGTH and len(line.split()) <= MAX_LINE_LENGTH]
+    answers = [ line for line in answers if len(line.split()) >= MIN_LINE_LENGTH and len(line.split()) <= MAX_LINE_LENGTH]
 
     return questions, answers
 
@@ -135,11 +137,11 @@ def sort_data(questions, answers):
     sorted_questions = []
     sorted_answers = []
 
-    for length in range(1, max_line_length+1):
-        for i in enumerate(questions_int):
+    for length in range(1, MAX_LINE_LENGTH+1):
+        for i in enumerate(questions):
             if len(i[1]) == length:
-                sorted_questions.append(questions_int[i[0]])
-                sorted_answers.append(answers_int[i[0]])
+                sorted_questions.append(questions[i[0]])
+                sorted_answers.append(answers[i[0]])
 
     return sorted_questions, sorted_answers
 
@@ -174,8 +176,8 @@ def filter_unk(q_tokenized, a_tokenized, w2idx):
     filtered_q, filtered_a = [], []
 
     for q_line, a_line in zip(q_tokenized, a_tokenized):
-        unk_count_q = len([ word for word in q_line if w not in w2idx ])
-        unk_count_a = len([ word for word in a_line if w not in w2idx ])
+        unk_count_q = len([ word for word in q_line if word not in w2idx ])
+        unk_count_a = len([ word for word in a_line if word not in w2idx ])
         if unk_count_a <= 2:
             if unk_count_q > 0:
                 if unk_count_q/len(q_line) > 0.2:
@@ -221,7 +223,7 @@ def pad_seq(seq, lookup, maxlen):
         if word in lookup:
             indices.append(lookup[word])
         else:
-            indices.append(lookup[UNK])
+            indices.append(lookup['unk'])
     return indices + [0]*(maxlen - len(seq))
 
 
@@ -231,27 +233,27 @@ def prep_data():
     # get a dictionary to map each line's id with its line
     id2line = map_IDs_to_lines(lines)
     # get a list of conversation IDs
-    convs = gather_converstation_IDs(conv_lines)
+    convs = gather_conversation_IDs(conv_lines)
     # get a questions (inputs) array and an answers (targets) array
     questions, answers = separate_questions_answers(convs, id2line)
     verifyData(questions, answers)
     print()
     # filter and clean the data
-    filtered_questions, filtered_answers = filter_data(questions, answers)
+    questions, answers = filter_data(questions, answers)
     # sort data by word length
-    sorted_questions, sorted_answers = sort_data(filtered_questions, filtered_answers)
-    verifyData(sorted_questions, sorted_answers)
+    #questions, answers = sort_data(questions, answers)
+    verifyData(questions, answers)
 
     # tokenize the data and get a word frequency dictionary
-    q_tokenized = [ [w.strip() for word in line.split() if word] for line in sorted_questions ]
-    a_tokenized = [ [w.strip() for word in line.split() if word] for line in sorted_answers ]
+    q_tokenized = [ [word.strip() for word in line.split() if word] for line in questions ]
+    a_tokenized = [ [word.strip() for word in line.split() if word] for line in answers ]
     idx2w, w2idx, freq_dist = get_frequency_distribution(q_tokenized + a_tokenized)
 
     # filter out sentences with too many unknowns
-    qtokenized, atokenized = filter_unk(qtokenized, atokenized, w2idx)
+    q_tokenized, a_tokenized = filter_unk(q_tokenized, a_tokenized, w2idx)
 
     # zero pad and create the final dataset
-    idx_q, idx_a = zero_pad(qtokenized, atokenized, w2idx)
+    idx_q, idx_a = zero_pad(q_tokenized, a_tokenized, w2idx)
     np.save('idx_q.npy', idx_q)
     np.save('idx_a.npy', idx_a)
 
