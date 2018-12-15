@@ -52,3 +52,9 @@ with tf.variable_scope('decoder') as scope:
 	cost = tf.contrib.legacy_seq2seq.sequence_loss(decode_out, labels, loss_weights, yvocab_size)
 	train_op = tf.train.AdamOptimizer(alpha).minimize(cost)
 	
+def get_feed(X, Y, k_prob):
+	feed_dict = {enc_ip[t]:X[t] for t in range(x_len)}
+	feed_dict.update({labels[t]: Y[t] for t in range(y_len)})
+	feed_dict[keep_prob] = k_prob
+	
+	return feed_dict
