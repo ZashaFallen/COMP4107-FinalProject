@@ -8,6 +8,7 @@ __pycache__/
 
 # Files
 *.pdf
+*.gz
 
 # Distribution / packaging
 .Python

@@ -1,0 +1,59 @@
+\documentclass[titlepage]{article}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\usepackage[left=12mm, top=12mm, right=12mm, bottom=12mm]{geometry}
+\usepackage{gensymb}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+\begin{document}
+
+\title{COMP 4107 Final Project\\
+         {\small Clean vs. Raw Data performance on an LSTM chatbot system}}
+\author{Lachlan Campbell, 100999056\\
+              Elijah MacPherson, 100970225}
+\maketitle
+
+\section{Introduction}
+Over the course of this paper we will be attempting to implement a chatbot.
+
+\section{Background}
+In order to implement this chatbot we will be using LSTM (Long short-term memory) neural networks.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=120mm]{LSTM-model.png}
+	\caption{An LSTM block recurrent neural network model.}
+	\label{fig:lstm1}
+\end{figure}
+We will be using a method called sequence to sequence learning where two neural networks (namely an encoder NN and a decoder NN) communicate with each other in order to convert sequences from one domain to sequences in another domain. In our case we will be working within the domains of $statement\rightarrow reply$.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=120mm]{Seq2seq.jpg}
+	\caption{A look at how google translate uses sequence to sequence learning to translate from one language to another}
+	\label{fig:seq2seqgoogletranslate}
+\end{figure}
+The model above uses many LSTM's in the encoder NN and the decoder NN, but for the purposes of the project we will only be using one LSTM in each the encoder NN and the decoder NN.
+
+
+\section{Problem Statement}
+The aim of this project is to determine what the effects of a cleaned data set are on the:\\
+\tab 1. Training time of an LSTM chatbot network\\
+\tab 2. Overall proficiency at conversation.
+
+\section{Results and Analysis}
+
+\section{Conclusion}
+
+\section{References}
+\large{Works Cited:}\\
+\small{
+
+}
+~\\~\\
+\large{Images:}\\
+\small{
+\\https://devblogs.nvidia.com/wp-content/uploads/2016/03/LSTM.png
+\\https://blog.altoros.com/wp-content/uploads/2017/04/tensorflow-dev-summit-2017-eugene-brevdo-keynote-sequence-models.jpg
+}
+
+\end{document}
