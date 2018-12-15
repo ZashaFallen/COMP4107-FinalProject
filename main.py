@@ -52,6 +52,7 @@ with tf.variable_scope('decoder') as scope:
 	cost = tf.contrib.legacy_seq2seq.sequence_loss(decode_out, labels, loss_weights, yvocab_size)
 	train_op = tf.train.AdamOptimizer(alpha).minimize(cost)
 	
+#sets up the feed_dictionary 
 def get_feed(X, Y, k_prob):
 	feed_dict = {enc_ip[t]:X[t] for t in range(x_len)}
 	feed_dict.update({labels[t]: Y[t] for t in range(y_len)})
@@ -59,6 +60,7 @@ def get_feed(X, Y, k_prob):
 	
 	return feed_dict
 
+#Trains the model on one batch
 def train_batch(sess, train_batch_gen):
 	batchX, batchY = train_batch_get.__next__()
 	feed_dict = get_feed(batchX, batchY, keep_prob=0.5)
@@ -66,6 +68,7 @@ def train_batch(sess, train_batch_gen):
 	
 	return cost_v
 	
+#evaluates an individual batch
 def eval_step(sess, eval_batch_gen):
 	batchX, batchY = eval_batch_gen.__next__()
 	feed_dict = get_feed(batchX, batchY, keep_prob=1.0)
@@ -74,6 +77,7 @@ def eval_step(sess, eval_batch_gen):
 	
 	return cost_v, dec_op_v, batchX, batchY
 	
+#evaluates the batches
 def eval_batches(sess, eval_batch_gen, num_batches):
 	costs = []
 	
@@ -83,6 +87,7 @@ def eval_batches(sess, eval_batch_gen, num_batches):
 		
 	return np.mean(costs)
 	
+#Trains the model on a training set and a valid set for confirmation
 def train(tr_set, v_set, sess=None):
 	saver = td.train.Saver()
 	
@@ -105,6 +110,7 @@ def train(tr_set, v_set, sess=None):
 			session = sess
 			return sess
 
+#This functions is unused
 def predict(sess, X):
 	feed_dict = {enc_ip[t]: X[t] for t in range(x_len)}
 	feed_dict[keep_prob] = 1
@@ -113,4 +119,10 @@ def predict(sess, X):
 	dec_op_v = np.array(dec_op_v).transpose([1,0,2])
 	
 	return np.argmax(dec_op_v, axis=2)
-	
+
+#Getting batches to train with
+val_batch_gen = data_utils.rand_batch_gen(vaX, vaY, batch_size)
+train_batch_gen = data_utils.rand_batch_gen(trX, trY, batch_size)
+
+#Training
+sess = train(train_batch_gen, val_batch_gen)
