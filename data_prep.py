@@ -2,7 +2,7 @@
 # https://github.com/suriyadeepan/practical_seq2seq/blob/master/datasets/cornell_corpus/data.py
 # https://github.com/Currie32/Chatbot-from-Movie-Dialogue/blob/master/Chatbot_Attention.py
 
-EN_WHITELIST = '0123456789abcdefghijklmnopqrstuvwxyz ' # space is included in whitelist
+EN_WHITELIST = '.0123456789abcdefghijklmnopqrstuvwxyz ' # space is included in whitelist
 MAX_LINE_LENGTH = 16
 MIN_LINE_LENGTH = 2
 
@@ -92,8 +92,6 @@ filter and clean the dataset
     - Remove sentences that are too long/too short
 '''
 def filter_data(questions, answers):
-    def filter_line(line):
-        return ''.join([ ch for ch in line if ch in EN_WHITELIST ])
     def clean_line(line):
         line = line.lower()
         line = re.sub(r"i'm", "i am", line)
@@ -101,7 +99,7 @@ def filter_data(questions, answers):
         line = re.sub(r"she's", "she is", line)
         line = re.sub(r"it's", "it is", line)
         line = re.sub(r"that's", "that is", line)
-        line = re.sub(r"what's", "that is", line)
+        line = re.sub(r"what's", "what is", line)
         line = re.sub(r"where's", "where is", line)
         line = re.sub(r"how's", "how is", line)
         line = re.sub(r"\'ll", " will", line)
@@ -116,18 +114,26 @@ def filter_data(questions, answers):
         line = re.sub(r"'bout", "about", line)
         line = re.sub(r"'til", "until", line)
         return line
+    def filter_line(line):
+        return ''.join([ ch for ch in line if ch in EN_WHITELIST ])
 
-    # Remove punctuation
-    questions = [ filter_line(line) for line in questions ]
-    answers = [ filter_line(line) for line in answers ]
     # Remove contractions
     questions = [ clean_line(line) for line in questions ]
     answers = [ clean_line(line) for line in answers ]
+    # Remove punctuation
+    questions = [ filter_line(line) for line in questions ]
+    answers = [ filter_line(line) for line in answers ]
     # Remove sentences that are too long/too short
-    questions = [ line for line in questions if len(line.split()) >= MIN_LINE_LENGTH and len(line.split()) <= MAX_LINE_LENGTH]
-    answers = [ line for line in answers if len(line.split()) >= MIN_LINE_LENGTH and len(line.split()) <= MAX_LINE_LENGTH]
+    tmp_questions = []
+    tmp_answers = []
+    for i, q in enumerate(questions):
+        a = answers[i]
+        if ((len(q.split()) >= MIN_LINE_LENGTH and len(q.split()) <= MAX_LINE_LENGTH) and
+                    (len(a.split()) >= MIN_LINE_LENGTH and len(a.split()) <= MAX_LINE_LENGTH)):
+            tmp_questions.append(q)
+            tmp_answers.append(a)
 
-    return questions, answers
+    return tmp_questions, tmp_answers
 
 
 '''
@@ -237,10 +243,11 @@ def prep_data():
     # get a questions (inputs) array and an answers (targets) array
     questions, answers = separate_questions_answers(convs, id2line)
     verifyData(questions, answers)
-    print()
     # filter and clean the data
     questions, answers = filter_data(questions, answers)
+    verifyData(questions, answers)
     # sort data by word length
+    '''
     #questions, answers = sort_data(questions, answers)
     verifyData(questions, answers)
 
@@ -268,7 +275,7 @@ def prep_data():
     # write to disk : data control dictionaries
     with open('metadata.pkl', 'wb') as f:
         pickle.dump(metadata, f)
-
+    '''
 
 def load_data(PATH=''):
     # read data control dictionaries
@@ -300,3 +307,13 @@ def split_dataset(x, y):
     validX, validY = x[-lengths[-1]:], y[-lengths[-1]:]
 
     return (trainX,trainY), (testX,testY), (validX,validY)
+
+
+'''
+ generate batches, by random sampling a bunch of items
+    yield (x_gen, y_gen)
+'''
+def rand_batch_gen(x, y, batch_size):
+    while True:
+        sample_idx = sample(list(np.arange(len(x))), batch_size)
+        yield x[sample_idx].T, y[sample_idx].T
