@@ -15,7 +15,7 @@
 \maketitle
 
 \section{Introduction}
-Over the course of this paper we will be attempting to implement a chatbot.
+\tab For this project we will attempt to implement a chatbox trained off of various transcript datasets. We will accomplish this using recurrent neural networks communicating and learning via sequence to sequence learning. The object of this project is to determine the effects of different data sets have on the conversational accuracy as well as training time. 
 
 \section{Background}
 In order to implement this chatbot we will be using LSTM (Long short-term memory) neural networks.
@@ -25,7 +25,14 @@ In order to implement this chatbot we will be using LSTM (Long short-term memory
 	\caption{An LSTM block recurrent neural network model.}
 	\label{fig:lstm1}
 \end{figure}
-We will be using a method called sequence to sequence learning where two neural networks (namely an encoder NN and a decoder NN) communicate with each other in order to convert sequences from one domain to sequences in another domain. In our case we will be working within the domains of $statement\rightarrow reply$.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=120mm]{LSTM-model-2.png}
+	\caption{A barebones view of the different gates involved in an LSTM.}
+	\label{fig:lstm2}
+\end{figure}
+~\\~\\~\\~\\~\\	
+\tab We will be using a method called sequence to sequence learning where two neural networks (namely an encoder NN and a decoder NN) communicate with each other in order to convert sequences from one domain to sequences in another domain. In our case we will be working within the domains of $statement\rightarrow reply$.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=120mm]{Seq2seq.jpg}
