@@ -58,3 +58,50 @@ def get_feed(X, Y, k_prob):
 	feed_dict[keep_prob] = k_prob
 	
 	return feed_dict
+
+def train_batch(sess, train_batch_gen):
+	batchX, batchY = train_batch_get.__next__()
+	feed_dict = get_feed(batchX, batchY, keep_prob=0.5)
+	_, cost_v = sess.run([train_op, cost], feed_dict)
+	
+	return cost_v
+	
+def eval_step(sess, eval_batch_gen):
+	batchX, batchY = eval_batch_gen.__next__()
+	feed_dict = get_feed(batchX, batchY, keep_prob=1.0)
+	cost_v, dec_op_v = sess.run([cost, decode_out_test], feed_dict)
+	dec_op_v = np.array(dec_op_v).transpose([1,0,2])
+	
+	return cost_v, dec_op_v, batchX, batchY
+	
+def eval_batches(sess, eval_batch_gen, num_batches):
+	costs = []
+	
+	for i in range(num_batches):
+		cost_v, dec_op_v, batchX, batchY = eval_step(sess, eval_batch_gen)
+		costs.append(cost_v)
+		
+	return np.mean(costs)
+	
+def train(tr_set, v_set, sess=None):
+	saver = td.train.Saver()
+	
+	if not sess:
+		sess = tf.Session()
+		sess.run(tf.global_variables_initializer())
+		
+	for i in range(epochs)
+		try:
+			train_batch(sess, tr_set)
+			if i an i% (epochs//100) == 0:
+				saver.save(sess, 'ckpt/data/project.ckpt', global_steps=i)
+				val_cost = eval_batches(sess, v_set, 16)
+				
+				print('\nModel saved to disk at iteration #{}'.format(i))
+				print('val cost: {0:.6f}'.format(val_cost))
+				
+		except KeyboardInterrupt:
+			print('Interrupted by user at iteration {}'.format(i))
+			session = sess
+			return sess
+			
