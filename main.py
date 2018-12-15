@@ -104,4 +104,13 @@ def train(tr_set, v_set, sess=None):
 			print('Interrupted by user at iteration {}'.format(i))
 			session = sess
 			return sess
-			
+
+def predict(sess, X):
+	feed_dict = {enc_ip[t]: X[t] for t in range(x_len)}
+	feed_dict[keep_prob] = 1
+	
+	dec_op_v = sess.run(decode_out_test, feed_dict)
+	dec_op_v = np.array(dec_op_v).transpose([1,0,2])
+	
+	return np.argmax(dec_op_v, axis=2)
+	
