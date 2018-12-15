@@ -279,3 +279,24 @@ def load_data(PATH=''):
     idx_a = np.load(PATH + 'idx_a.npy')
 
     return metadata, idx_q, idx_a
+
+
+'''
+split data into training (70%), testing (15%) and validation (15%)
+    return (trainX, trainY), (testX,testY), (validX,validY)
+
+Source:
+    https://github.com/suriyadeepan/practical_seq2seq/blob/master/data_utils.py::split_dataset()
+'''
+def split_dataset(x, y):
+    ratio = [0.7, 0.15, 0.15]
+
+    # number of examples
+    data_len = len(x)
+    lengths = [ int(data_len*item) for item in ratio ]
+
+    trainX, trainY = x[:lengths[0]], y[:lengths[0]]
+    testX, testY = x[lengths[0]:lengths[0]+lengths[1]], y[lengths[0]:lengths[0]+lengths[1]]
+    validX, validY = x[-lengths[-1]:], y[-lengths[-1]:]
+
+    return (trainX,trainY), (testX,testY), (validX,validY)
