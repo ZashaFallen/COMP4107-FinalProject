@@ -25,22 +25,25 @@ Two sets of input data were prepared from the movie dataset. The first was a `cl
 In order to implement this chatbot we will be using LSTM (Long short-term memory) neural networks.
 \begin{figure}[H]
 	\centering
+	\captionsetup{justification=centering}
 	\includegraphics[width=120mm]{images/LSTM-model.png}
-	\caption{An LSTM block recurrent neural network model.}
+	\caption{An LSTM block recurrent neural network model. \\{\tiny \url{https://devblogs.nvidia.com/wp-content/uploads/2016/03/LSTM.png}}}
 	\label{fig:lstm1}
 \end{figure}
 \begin{figure}[H]
 	\centering
+	\captionsetup{justification=centering}
 	\includegraphics[width=120mm]{images/LSTM-model-2.png}
-	\caption{A barebones view of the different gates involved in an LSTM.}
+	\caption{A barebones view of the different gates involved in an LSTM.\\{\tiny \url{https://raw.githubusercontent.com/torch/torch.github.io/master/blog/\_posts/images/LSTM.png}}}
 	\label{fig:lstm2}
 \end{figure}
 ~\\~\\~\\~\\~\\	
 \tab We will be using a method called sequence to sequence learning where two neural networks (namely an encoder NN and a decoder NN) communicate with each other in order to convert sequences from one domain to sequences in another domain. In our case we will be working within the domains of $statement\rightarrow reply$.
 \begin{figure}[H]
 	\centering
+	\captionsetup{justification=centering}
 	\includegraphics[width=120mm]{images/Seq2seq.jpg}
-	\caption{A look at how google translate uses sequence to sequence learning to translate from one language to another}
+	\caption{A look at how google translate uses sequence to sequence learning to translate from one language to another. \\{\tiny \url{https://blog.altoros.com/wp-content/uploads/2017/04/tensorflow-dev-summit-2017-eugene-brevdo-keynote-sequence-models.jpg}}}
 	\label{fig:seq2seqgoogletranslate}
 \end{figure}
 The model above uses many LSTM's in the encoder NN and the decoder NN, but for the purposes of the project we will only be using three LSTM's stacked in the encoder NN and one LSTM in the decoder NN.\\
@@ -57,12 +60,14 @@ The aim of this project is to determine what the effects of a cleaned data set a
 Before training can begin, let us first look at the computational graph of our model:
 \begin{figure}[H]
 	\centering
+	\captionsetup{justification=centering}
 	\includegraphics[width=80mm]{images/main_graph.png}
 	\caption{The main graph of our chatbot network}
 	\label{fig:maingraph}
 \end{figure}
 \begin{figure}[H]
 	\centering
+	\captionsetup{justification=centering}
 	\includegraphics[width=100mm]{images/aux_nodes.png}
 	\caption{A look at the auxilliary nodes of the model. Note there are 24 EI units in total.\\(extends below the arrow)}
 	\label{fig:auxnodes}
@@ -163,19 +168,6 @@ It is clear that cleaning the dataset doesn't have much of an effect on the over
 \end{forest}
 
 \newpage
-\large{Works Cited:}\\
-\small{
-\\https://github.com/martin-gorner/tensorflow-rnn-shakespeare 
-\\https://github.com/Conchylicultor/DeepQA
-\\https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html
-}
-~\\~\\
-\large{Images:}
-\small{
-\\https://devblogs.nvidia.com/wp-content/uploads/2016/03/LSTM.png
-\\https://blog.altoros.com/wp-content/uploads/2017/04/tensorflow-dev-summit-2017-eugene-brevdo-keynote-sequence-models.jpg
-\\https://raw.githubusercontent.com/torch/torch.github.io/master/blog/\_posts/images/LSTM.png
-}\\
 \nocite{*}
 \bibliographystyle{plain}
 \bibliography{research}
