@@ -13,14 +13,16 @@ import data_prep as data
 print("--- Dependancies Loaded ---")
 
 if (len(sys.argv) == 2):
-    if (sys.argv[1].lower() == "true"):
+    if (sys.argv[1].lower() == "raw"):
+        print ("Loading raw data")
         m_data, idx_q, idx_a = data.load_data(True)
-    elif (sys.argv[1].lower() == "false"):
+    elif (sys.argv[1].lower() == "clean"):
+        print ("Loading clean data")
         m_data, idx_q, idx_a = data.load_data(False)
     else:
-        sys.exit("Error, incorrect command line arguments")
+        sys.exit("Error, incorrect command line arguments. Please supply either 'raw' or 'clean' for which dataset should be used.")
 else:
-    sys.exit("Error, incorrect command line arguments")
+    sys.exit("Error, incorrect command line arguments. Please supply either 'raw' or 'clean' for which dataset should be used.")
 
 (trX, trY), (teX, teY), (vaX, vaY) = data.split_dataset(idx_q, idx_a)
 
