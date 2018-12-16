@@ -15,7 +15,7 @@ m_data, idx_q, idx_a = data.load_data()
 print("--- Data Loaded ---")
 
 #Hyperparameters
-epochs = 10
+epochs = 500
 batch_size = 64
 
 x_len = trX.shape[-1]
@@ -100,8 +100,8 @@ def train(tr_set, v_set, sess=None):
     for i in range(epochs):
         try:
             train_batch(sess, tr_set)
-            if i % 100 == 0 or epochs < 100:
-                saver.save(sess, 'ckpt/data/project', global_step=i)
+            if i % 50 == 0 or epochs < 100:
+                saver.save(sess, 'data/ckpt/project', global_step=i)
                 val_cost = eval_batches(sess, v_set, 16)
 
                 print('\nModel saved to disk at iteration #{}'.format(i))

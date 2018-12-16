@@ -24,8 +24,8 @@ from random import sample
 Load the raw data
 '''
 def get_raw_data():
-    lines = open('raw_data/movie_lines.txt', encoding='utf-8', errors='ignore').read().split('\n')
-    conv_lines = open('raw_data/movie_conversations.txt', encoding='utf-8', errors='ignore').read().split('\n')
+    lines = open('data/movie_lines.txt', encoding='utf-8', errors='ignore').read().split('\n')
+    conv_lines = open('data/movie_conversations.txt', encoding='utf-8', errors='ignore').read().split('\n')
 
     # This should just print the lines and not actually reshape them, right?
     # The sentences that we will be using to train our model.
@@ -246,9 +246,7 @@ def prep_data():
     verifyData(questions, answers)
     # filter and clean the data
     questions, answers = filter_data(questions, answers)
-    verifyData(questions, answers)
     # sort data by word length
-    '''
     #questions, answers = sort_data(questions, answers)
     verifyData(questions, answers)
 
@@ -276,7 +274,7 @@ def prep_data():
     # write to disk : data control dictionaries
     with open('metadata.pkl', 'wb') as f:
         pickle.dump(metadata, f)
-    '''
+
 
 def load_data(PATH=''):
     # read data control dictionaries
