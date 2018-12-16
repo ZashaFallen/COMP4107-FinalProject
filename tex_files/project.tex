@@ -25,13 +25,13 @@ Two sets of input data were prepared from the movie dataset. The first was a `cl
 In order to implement this chatbot we will be using LSTM (Long short-term memory) neural networks.
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=120mm]{LSTM-model.png}
+	\includegraphics[width=120mm]{images/LSTM-model.png}
 	\caption{An LSTM block recurrent neural network model.}
 	\label{fig:lstm1}
 \end{figure}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=120mm]{LSTM-model-2.png}
+	\includegraphics[width=120mm]{images/LSTM-model-2.png}
 	\caption{A barebones view of the different gates involved in an LSTM.}
 	\label{fig:lstm2}
 \end{figure}
@@ -39,7 +39,7 @@ In order to implement this chatbot we will be using LSTM (Long short-term memory
 \tab We will be using a method called sequence to sequence learning where two neural networks (namely an encoder NN and a decoder NN) communicate with each other in order to convert sequences from one domain to sequences in another domain. In our case we will be working within the domains of $statement\rightarrow reply$.
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=120mm]{Seq2seq.jpg}
+	\includegraphics[width=120mm]{images/Seq2seq.jpg}
 	\caption{A look at how google translate uses sequence to sequence learning to translate from one language to another}
 	\label{fig:seq2seqgoogletranslate}
 \end{figure}
@@ -57,13 +57,13 @@ The aim of this project is to determine what the effects of a cleaned data set a
 Before training can begin, let us first look at the computational graph of our model:
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=80mm]{main_graph.png}
+	\includegraphics[width=80mm]{images/main_graph.png}
 	\caption{The main graph of our chatbot network}
 	\label{fig:maingraph}
 \end{figure}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=100mm]{aux_nodes.png}
+	\includegraphics[width=100mm]{images/aux_nodes.png}
 	\caption{A look at the auxilliary nodes of the model. Note there are 24 EI units in total.\\(extends below the arrow)}
 	\label{fig:auxnodes}
 \end{figure}
@@ -73,12 +73,12 @@ Training
 	\centering
 	\begin{subfigure}[b]{0.4\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{cost-clean-001.png}
+		\includegraphics[width=\linewidth]{images/cost-clean-001.png}
 		\caption{The cost function trained on a clean dataset\\with $\alpha = 0.001$}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.4\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{cost-raw-001.png}
+		\includegraphics[width=\linewidth]{images/cost-raw-001.png}
 		\caption{The cost function trained on a raw dataset\\with $\alpha = 0.001$}
 	\end{subfigure}
 	\label{fig:ccr001}
@@ -86,14 +86,14 @@ Training
 As you can see from the graph the cost seems to settle around 250 epochs with a minimum value of approx. 2.7. If we overlay the two charts and remove the smoothing we get this:
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=120mm]{cost-overlap-001.png}
+	\includegraphics[width=120mm]{images/cost-overlap-001.png}
 	\caption{Overlap of clean vs. raw dataset performance.}
 	\label{fig:co001}
 \end{figure}
 As you can see from the graph there isn't much improvement in terms of actuall training accurracy with respect to the cleanliness of the dataset. They both converge in \textasciitilde 250 epochs, however if we switch the graphs to relative view, something interesting happens.
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=120mm]{cost-overlap-relative-001.png}
+	\includegraphics[width=120mm]{images/cost-overlap-relative-001.png}
 	\caption{Overlap of clean vs. raw dataset with respect to training time.}
 	\label{fig:cor001}
 \end{figure} 
@@ -122,13 +122,25 @@ It is clear that cleaning the dataset doesn't have much of an effect on the over
     },
     fit=band,
     before computing xy={l=15pt},
-  }
+  } 
 [COMP4107-FinalProject
   [data
     [ckpt
-    	[Tensorboard Checkpoints]
+    	[clean\_ckpt
+    	  [Saved checkpoints for model trained on the clean input data]
+    	]
+	[raw\_ckpt
+    	  [Saved checkpoints for model trained on the raw input data]
+    	]
+    	[Tensorboard Checkpoints (current model)]
     ]
     [logs
+	[clean\_logs
+    	  [Saved logs for model trained on the clean input data]
+    	]
+	[raw\_logs
+    	  [Saved logs for model trained on the raw input data]
+    	]
     	[Tensorboard Logs]
     ]
     [movie\_characters\_metadata.txt]
