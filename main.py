@@ -3,6 +3,7 @@
 #External Libraries
 import numpy as np
 import tensorflow as tf
+import sys
 from datetime import datetime
 now = datetime.now()
 
@@ -11,7 +12,16 @@ import data_prep as data
 
 print("--- Dependancies Loaded ---")
 
-m_data, idx_q, idx_a = data.load_data()
+if (len(sys.argv) == 2):
+    if (sys.argv[1].lower() == "true"):
+        m_data, idx_q, idx_a = data.load_data(True)
+    elif (sys.argv[1].lower() == "false"):
+        m_data, idx_q, idx_a = data.load_data(False)
+    else:
+        sys.exit("Error, incorrect command line arguments")
+else:
+    sys.exit("Error, incorrect command line arguments")
+
 (trX, trY), (teX, teY), (vaX, vaY) = data.split_dataset(idx_q, idx_a)
 
 print("--- Data Loaded ---")
@@ -107,11 +117,11 @@ def train(tr_set, v_set, sess=None):
             _, summary = train_batch(sess, tr_set, merged)
             writer.add_summary(summary, i)
             print('\nIteration: {}'.format(i))
-            if i % 50 == 0 or epochs < 100:
+            if (i+1) % 50 == 0 or epochs < 100:
                 saver.save(sess, 'data/ckpt/project', global_step=i)
                 val_cost = eval_batches(sess, v_set, 16)
 
-                print('\nModel saved to disk at iteration #{}'.format(i))
+                print('\nModel saved to disk at iteration #{}'.format(i+1))
                 print('val cost: {0:.6f}'.format(val_cost))
 
         except KeyboardInterrupt:

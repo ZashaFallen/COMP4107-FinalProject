@@ -119,11 +119,11 @@ def filter_data(questions, answers):
         return ''.join([ ch for ch in line if ch in EN_WHITELIST ])
 
     # Remove contractions
-    questions = [ clean_line(line) for line in questions ]
-    answers = [ clean_line(line) for line in answers ]
+    #questions = [ clean_line(line) for line in questions ]
+    #answers = [ clean_line(line) for line in answers ]
     # Remove punctuation
-    questions = [ filter_line(line) for line in questions ]
-    answers = [ filter_line(line) for line in answers ]
+    #questions = [ filter_line(line) for line in questions ]
+    #answers = [ filter_line(line) for line in answers ]
     # Remove sentences that are too long/too short
     tmp_questions = []
     tmp_answers = []
@@ -260,8 +260,8 @@ def prep_data():
 
     # zero pad and create the final dataset
     idx_q, idx_a = zero_pad(q_tokenized, a_tokenized, w2idx)
-    np.save('idx_q.npy', idx_q)
-    np.save('idx_a.npy', idx_a)
+    np.save('idx_q_raw.npy', idx_q)
+    np.save('idx_a_raw.npy', idx_a)
 
     # save the dictionary metadata
     metadata = {
@@ -272,17 +272,25 @@ def prep_data():
     }
 
     # write to disk : data control dictionaries
-    with open('metadata.pkl', 'wb') as f:
+    with open('metadata_raw.pkl', 'wb') as f:
         pickle.dump(metadata, f)
 
 
-def load_data(PATH=''):
-    # read data control dictionaries
-    with open(PATH + 'metadata.pkl', 'rb') as f:
-        metadata = pickle.load(f)
-    # read numpy arrays
-    idx_q = np.load(PATH + 'idx_q.npy')
-    idx_a = np.load(PATH + 'idx_a.npy')
+def load_data(PATH='', raw=False):
+    if (raw):
+        # read data control dictionaries
+        with open(PATH + 'metadata_raw.pkl', 'rb') as f:
+            metadata = pickle.load(f)
+        # read numpy arrays
+        idx_q = np.load(PATH + 'idx_q_raw.npy')
+        idx_a = np.load(PATH + 'idx_a_raw.npy')
+    else:
+        # read data control dictionaries
+        with open(PATH + 'metadata.pkl', 'rb') as f:
+            metadata = pickle.load(f)
+        # read numpy arrays
+        idx_q = np.load(PATH + 'idx_q.npy')
+        idx_a = np.load(PATH + 'idx_a.npy')
 
     return metadata, idx_q, idx_a
 
