@@ -3,6 +3,8 @@
 #External Libraries
 import numpy as np
 import tensorflow as tf
+from datetime import datetime
+now = datetime.now()
 
 #Supplemetary Files
 import data_prep as data
@@ -17,6 +19,8 @@ print("--- Data Loaded ---")
 #Hyperparameters
 epochs = 500
 batch_size = 64
+alpha = 0.0001
+p_keep = 0.75
 
 x_len = trX.shape[-1]
 y_len = trY.shape[-1]
@@ -25,9 +29,6 @@ layers = 3
 xvocab_size = len(m_data['idx2w'])
 yvocab_size = xvocab_size
 emb_dim = 1024
-
-alpha = 0.0001
-p_keep = 0.75
 
 #Input placeholders
 enc_ip = [tf.placeholder(shape=[None,], dtype=tf.int64, name='ei_{}'.format(t)) for t in range(x_len)]
@@ -54,6 +55,8 @@ with tf.variable_scope('decoder') as scope:
     cost = tf.contrib.legacy_seq2seq.sequence_loss(decode_out, labels, loss_weights, yvocab_size)
     train_op = tf.train.GradientDescentOptimizer(alpha).minimize(cost)
 
+    tf.summary.scalar("cost", cost) #For TensorBoard
+
 #sets up the feed_dictionary
 def get_feed(X, Y, k_prob):
     feed_dict = {enc_ip[t]:X[t] for t in range(x_len)}
@@ -63,12 +66,12 @@ def get_feed(X, Y, k_prob):
     return feed_dict
 
 #Trains the model on one batch
-def train_batch(sess, train_batch_gen):
+def train_batch(sess, train_batch_gen, merged):
     batchX, batchY = train_batch_gen.__next__()
     feed_dict = get_feed(batchX, batchY, k_prob=0.5)
-    _, cost_v = sess.run([train_op, cost], feed_dict)
+    summary, _, cost_v = sess.run([merged, train_op, cost], feed_dict)
 
-    return cost_v
+    return cost_v, summary
 
 #evaluates an individual batch
 def eval_step(sess, eval_batch_gen):
@@ -96,10 +99,14 @@ def train(tr_set, v_set, sess=None):
     if not sess:
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
+    merged = tf.summary.merge_all()
+    writer = tf.summary.FileWriter("./data/logs/" + now.strftime("%Y-%m-%d_%H-%M-%S"), sess.graph)
 
     for i in range(epochs):
         try:
-            train_batch(sess, tr_set)
+            _, summary = train_batch(sess, tr_set, merged)
+            writer.add_summary(summary, i)
+            print('\nIteration: {}'.format(i))
             if i % 50 == 0 or epochs < 100:
                 saver.save(sess, 'data/ckpt/project', global_step=i)
                 val_cost = eval_batches(sess, v_set, 16)
