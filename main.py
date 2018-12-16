@@ -107,11 +107,11 @@ def train(tr_set, v_set, sess=None):
             _, summary = train_batch(sess, tr_set, merged)
             writer.add_summary(summary, i)
             print('\nIteration: {}'.format(i))
-            if (i+1) % 50 == 0 or epochs < 100:
+            if i % 50 == 0 or epochs < 100:
                 saver.save(sess, 'data/ckpt/project', global_step=i)
                 val_cost = eval_batches(sess, v_set, 16)
 
-                print('\nModel saved to disk at iteration #{}'.format(i+1))
+                print('\nModel saved to disk at iteration #{}'.format(i))
                 print('val cost: {0:.6f}'.format(val_cost))
 
         except KeyboardInterrupt:
