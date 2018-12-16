@@ -133,7 +133,7 @@ def train(tr_set, v_set, sess=None):
             session = sess
             return sess
 
-#This functions is unused
+#This functions should be used for testing user input
 def predict(sess, X):
     feed_dict = {enc_ip[t]: X[t] for t in range(x_len)}
     feed_dict[keep_prob] = 1
@@ -146,19 +146,20 @@ def predict(sess, X):
 
 def restore_last_session(data_type):
     saver = tf.train.Saver()
-    # create a session
     sess = tf.Session()
+
     # get checkpoint state
     if (data_type == "raw"):
         ckpt = tf.train.get_checkpoint_state('data/ckpt/raw_ckpt')
     elif (data_type == "clean"):
         ckpt = tf.train.get_checkpoint_state('data/ckpt/clean_ckpt')
+        
     # restore session
     if ckpt and ckpt.model_checkpoint_path:
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
         sys.exit("An error occured when trying to load a previous checkpoint")
-    # return to user
+
     return sess
 
 #Getting batches to train with
