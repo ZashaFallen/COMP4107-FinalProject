@@ -65,17 +65,40 @@ Before training can begin, let us first look at the computational graph of our m
 Training
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=120mm]{cost-clean-001.png}
-	\caption{The cost function trained on a clean dataset with $\alpha = 0.001$}
-	\label{fig:cc001}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{cost-clean-001.png}
+		\caption{The cost function trained on a clean dataset with $\alpha = 0.001$}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{cost-raw-001.png}
+		\caption{The cost function trained on a raw dataset with $\alpha = 0.001$}
+	\end{subfigure}
+	\label{fig:ccr001}
 \end{figure}
-As you can see from the graph the cost seems to settle around 240 epochs with a minimum value of approx. 3.0.
+As you can see from the graph the cost seems to settle around 250 epochs with a minimum value of approx. 2.7. If we overlay the two charts and remove the smoothing we get this:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=120mm]{cost-overlap-001.png}
+	\caption{Overlap of clean vs. raw dataset performance.}
+	\label{fig:co001}
+\end{figure}
+As you can see from the graph there isn't much improvement in terms of actuall training accurracy with respect to the cleanliness of the dataset. They both converge in \textasciitilde 250 epochs, however if we switch the graphs to relative view, something interesting happens.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=120mm]{cost-overlap-relative-001.png}
+	\caption{Overlap of clean vs. raw dataset with respect to training time.}
+	\label{fig:cor001}
+\end{figure} 
+We can see from the figure above that the cleaned dataset takes about 5 minutes less to reach equilibrium. It also takes about 10 minutes less in order to reach 500 epochs. This is likely due to the fact that a clean dataset removes much of the verbosity out of the sentences, as well as unneccessary punctuation and overall longer or shorter sentances, so the network has a lot less \'fluff\' to deal with when training. 
 
 \section{Conclusion}
+It is clear that cleaning the dataset doesn't have much of an effect on the overall performance of the network in terms of training accuracy. It does however improve the time it takes the network to train fairly significantly.
 
 \section{References}
-\textbf{Cornell Movie -- Dialogs Corpus: } https://www.cs.cornell.edu/\textasciitilde cristian/Cornell\_Movie-Dialogs\_Corpus.html\\\\
-\large{Works Cited:}\\
+\textbf{Cornell Movie -- Dialogs Corpus: } https://www.cs.cornell.edu/\textasciitilde cristian/Cornell\_Movie-Dialogs\_Corpus.html
+\large{Works Cited:}
 \small{
 \\https://github.com/Currie32/Chatbot-from-Movie-Dialogue
 \\https://github.com/suriyadeepan/practical\_seq2seq
@@ -84,7 +107,7 @@ As you can see from the graph the cost seems to settle around 240 epochs with a 
 \\https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html
 }
 ~\\~\\
-\large{Images:}\\
+\large{Images:}
 \small{
 \\https://devblogs.nvidia.com/wp-content/uploads/2016/03/LSTM.png
 \\https://blog.altoros.com/wp-content/uploads/2017/04/tensorflow-dev-summit-2017-eugene-brevdo-keynote-sequence-models.jpg
