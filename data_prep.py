@@ -18,6 +18,7 @@ import numpy as np
 import nltk
 import re
 import pickle
+from random import sample
 
 '''
 Load the raw data
