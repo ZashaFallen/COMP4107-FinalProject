@@ -44,9 +44,13 @@ enc_state = tf.nn.rnn_cell.MultiRNNCell([dropout]*layers)
 
 #Building the Decoder and the Sequence to Sequence model
 with tf.variable_scope('decoder') as scope:
-    decode_out, decode_states = tf.contrib.legacy_seq2seq.embedding_rnn_seq2seq(enc_ip, dec_ip, enc_state, xvocab_size, yvocab_size, emb_dim)
-    scope.reuse_variables()
-    decode_out_test, decode_states_test = tf.contrib.legacy_seq2seq.embedding_rnn_seq2seq(enc_ip, dec_ip, enc_state, xvocab_size, yvocab_size, emb_dim, feed_previous=True)
+    setattr(tf.contrib.rnn.GRUCell, '__deepcopy__', lambda self, _: self)
+    setattr(tf.contrib.rnn.BasicLSTMCell, '__deepcopy__', lambda self, _: self)
+    setattr(tf.contrib.rnn.MultiRNNCell, '__deepcopy__', lambda self, _: self)
+	decode_out, decode_states = tf.contrib.legacy_seq2seq.embedding_rnn_seq2seq(enc_ip, dec_ip, enc_state, xvocab_size, yvocab_size, emb_dim)
+	scope.reuse_variables()
+	decode_out_test, decode_states_test = tf.contrib.legacy_seq2seq.embedding_rnn_seq2seq(enc_ip, dec_ip, enc_state, xvocab_size, yvocab_size, emb_dim, feed_previous=True)
+
 
     loss_weights = [tf.ones_like(label, dtype=tf.float32) for label in labels]
     cost = tf.contrib.legacy_seq2seq.sequence_loss(decode_out, labels, loss_weights, yvocab_size)
