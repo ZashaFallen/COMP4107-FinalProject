@@ -5,6 +5,8 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{natbib}
+\usepackage{hyperref}
 
 \begin{document}
 
@@ -15,7 +17,7 @@
 \maketitle
 
 \section{Introduction}
-\tab For this project we will attempt to implement a chatbox trained off of various transcript datasets. We will accomplish this using recurrent neural networks communicating and learning via sequence to sequence learning. The object of this project is to determine the effects of different data sets have on the conversational accuracy as well as training time. 
+\tab For this project we will attempt to implement a chatbox trained off of various transcript datasets. We will accomplish this using recurrent neural networks communicating and learning via sequence to sequence learning. The object of this project is to determine the effects of different data sets have on the conversational accuracy as well as training time.
 
 \section{Background}
 In order to implement this chatbot we will be using LSTM (Long short-term memory) neural networks.
@@ -39,8 +41,10 @@ In order to implement this chatbot we will be using LSTM (Long short-term memory
 	\caption{A look at how google translate uses sequence to sequence learning to translate from one language to another}
 	\label{fig:seq2seqgoogletranslate}
 \end{figure}
-The model above uses many LSTM's in the encoder NN and the decoder NN, but for the purposes of the project we will only be using one LSTM in each the encoder NN and the decoder NN.
+The model above uses many LSTM's in the encoder NN and the decoder NN, but for the purposes of the project we will only be using one LSTM in each the encoder NN and the decoder NN.\\
 
+\subsection*{The Dataset}
+The dataset that was chosen was Cornell University's Movie Dialogue Corpus.\cite{chameleons, cornell} The dialogue corpus contains over 200,000 pieces of conversation between 10,292 movie characters in 617 movies. The dataset also includes metadata storing the genres, release year, IMDB rating and the number of IMDB votes for each movie. For each character, the metadata includes the gender and position on movie credits. This metadata was not used.
 
 \section{Problem Statement}
 The aim of this project is to determine what the effects of a cleaned data set are on the:\\
@@ -96,11 +100,15 @@ We can see from the figure above that the cleaned dataset takes about 5 minutes 
 \section{Conclusion}
 It is clear that cleaning the dataset doesn't have much of an effect on the overall performance of the network in terms of training accuracy. It does however improve the time it takes the network to train fairly significantly.
 
+\section{File Directory Structure}
+
 \section{References}
+
 \textbf{Cornell Movie -- Dialogs Corpus: } https://www.cs.cornell.edu/\textasciitilde cristian/Cornell\_Movie-Dialogs\_Corpus.html
-\large{Works Cited:}
+
+\newpage
+\large{Works Cited:}\\
 \small{
-\\https://github.com/Currie32/Chatbot-from-Movie-Dialogue
 \\https://github.com/suriyadeepan/practical\_seq2seq
 \\https://github.com/martin-gorner/tensorflow-rnn-shakespeare 
 \\https://github.com/Conchylicultor/DeepQA
@@ -111,8 +119,9 @@ It is clear that cleaning the dataset doesn't have much of an effect on the over
 \small{
 \\https://devblogs.nvidia.com/wp-content/uploads/2016/03/LSTM.png
 \\https://blog.altoros.com/wp-content/uploads/2017/04/tensorflow-dev-summit-2017-eugene-brevdo-keynote-sequence-models.jpg
-}
-
-\section{File Directory Structure}
+}\\
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{research}
 
 \end{document}
