@@ -19,7 +19,7 @@ print("--- Data Loaded ---")
 #Hyperparameters
 epochs = 500
 batch_size = 64
-alpha = 0.0001
+alpha = 0.001
 p_keep = 0.75
 
 x_len = trX.shape[-1]
