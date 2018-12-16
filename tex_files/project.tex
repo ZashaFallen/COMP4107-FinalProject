@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{hyperref}
+\usepackage{forest}
 
 \begin{document}
 
@@ -42,7 +43,7 @@ In order to implement this chatbot we will be using LSTM (Long short-term memory
 	\caption{A look at how google translate uses sequence to sequence learning to translate from one language to another}
 	\label{fig:seq2seqgoogletranslate}
 \end{figure}
-The model above uses many LSTM's in the encoder NN and the decoder NN, but for the purposes of the project we will only be using one LSTM in each the encoder NN and the decoder NN.\\
+The model above uses many LSTM's in the encoder NN and the decoder NN, but for the purposes of the project we will only be using three LSTM's stacked in the encoder NN and one LSTM in the decoder NN.\\
 
 \subsection*{The Dataset}
 The dataset that was chosen was Cornell University's Movie Dialogue Corpus.\cite{chameleons, cornell} The dialogue corpus contains over 200,000 pieces of conversation between 10,292 movie characters in 617 movies. The dataset also includes metadata storing the genres, release year, IMDB rating and the number of IMDB votes for each movie. For each character, the metadata includes the gender and position on movie credits. This metadata was not used.
@@ -50,19 +51,19 @@ The dataset that was chosen was Cornell University's Movie Dialogue Corpus.\cite
 \section{Problem Statement}
 The aim of this project is to determine what the effects of a cleaned data set are on the:\\
 \tab 1. Training time of an LSTM chatbot network\\
-\tab 2. Overall proficiency at conversation.
+\tab 2. Overall proficiency in training accuracy.
 
 \section{Results and Analysis}
 Before training can begin, let us first look at the computational graph of our model:
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=120mm]{main_graph.png}
+	\includegraphics[width=80mm]{main_graph.png}
 	\caption{The main graph of our chatbot network}
 	\label{fig:maingraph}
 \end{figure}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=120mm]{aux_nodes.png}
+	\includegraphics[width=100mm]{aux_nodes.png}
 	\caption{A look at the auxilliary nodes of the model. Note there are 24 EI units in total.\\(extends below the arrow)}
 	\label{fig:auxnodes}
 \end{figure}
@@ -73,12 +74,12 @@ Training
 	\begin{subfigure}[b]{0.4\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{cost-clean-001.png}
-		\caption{The cost function trained on a clean dataset with $\alpha = 0.001$}
+		\caption{The cost function trained on a clean dataset\\with $\alpha = 0.001$}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.4\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{cost-raw-001.png}
-		\caption{The cost function trained on a raw dataset with $\alpha = 0.001$}
+		\caption{The cost function trained on a raw dataset\\with $\alpha = 0.001$}
 	\end{subfigure}
 	\label{fig:ccr001}
 \end{figure}
@@ -102,6 +103,52 @@ We can see from the figure above that the cleaned dataset takes about 5 minutes 
 It is clear that cleaning the dataset doesn't have much of an effect on the overall performance of the network in terms of training accuracy. It does however improve the time it takes the network to train fairly significantly.
 
 \section{File Directory Structure}
+\begin{forest}
+  for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(7.5pt,0) |- node[fill,inner sep=1.25pt] {} (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    before computing xy={l=15pt},
+  }
+[COMP4107-FinalProject
+  [data
+    [ckpt
+    	[Tensorboard Checkpoints]
+    ]
+    [logs
+    	[Tensorboard Logs]
+    ]
+    [movie\_characters\_metadata.txt]
+    [movie\_conversations.txt]
+    [movie\_lines.txt]
+    [movie\_titles\_metadata.txt]
+    [movie\_titles.txt]
+    [raw\_script\_urls.txt]
+    [README.txt]
+  ]
+  [data\_prep.py]
+  [idx\_a.npy]
+  [idx\_a\_raw.npy]
+  [idx\_q.npy]
+  [idx\_q\_raw.npy]
+  [main.py]
+  [metadata.pkl]
+  [metadata\_raw.pkl]
+]
+\end{forest}
 
 \newpage
 \large{Works Cited:}\\
