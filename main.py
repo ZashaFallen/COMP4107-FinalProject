@@ -12,11 +12,13 @@ import data_prep as data
 
 print("--- Dependancies Loaded ---")
 
+data_type = ""
 if (len(sys.argv) == 2):
-    if (sys.argv[1].lower() == "raw"):
+    data_type = sys.argv[1].lower()
+    if (data_type == "raw"):
         print ("Loading raw data")
         m_data, idx_q, idx_a = data.load_data(True)
-    elif (sys.argv[1].lower() == "clean"):
+    elif (data_type == "clean"):
         print ("Loading clean data")
         m_data, idx_q, idx_a = data.load_data(False)
     else:
@@ -141,9 +143,28 @@ def predict(sess, X):
 
     return np.argmax(dec_op_v, axis=2)
 
+
+def restore_last_session(data_type):
+    saver = tf.train.Saver()
+    # create a session
+    sess = tf.Session()
+    # get checkpoint state
+    if (data_type == "raw"):
+        ckpt = tf.train.get_checkpoint_state('data/ckpt/raw_ckpt')
+    elif (data_type == "clean"):
+        ckpt = tf.train.get_checkpoint_state('data/ckpt/clean_ckpt')
+    # restore session
+    if ckpt and ckpt.model_checkpoint_path:
+        saver.restore(sess, ckpt.model_checkpoint_path)
+    else:
+        sys.exit("An error occured when trying to load a previous checkpoint")
+    # return to user
+    return sess
+
 #Getting batches to train with
 val_batch_gen = data.rand_batch_gen(vaX, vaY, batch_size)
 train_batch_gen = data.rand_batch_gen(trX, trY, batch_size)
 
 #Training
 sess = train(train_batch_gen, val_batch_gen)
+#sess = restore_last_session(data_type)
