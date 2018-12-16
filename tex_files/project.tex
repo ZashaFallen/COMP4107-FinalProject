@@ -5,7 +5,6 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{subcaption}
-\usepackage{natbib}
 \usepackage{hyperref}
 
 \begin{document}
@@ -18,6 +17,8 @@
 
 \section{Introduction}
 \tab For this project we will attempt to implement a chatbox trained off of various transcript datasets. We will accomplish this using recurrent neural networks communicating and learning via sequence to sequence learning. The object of this project is to determine the effects of the cleanliness of datasets have on the conversational accuracy as well as training time.
+
+Two sets of input data were prepared from the movie dataset. The first was a `clean' version with punctuation and contractions removed. The second version of the input data was a `raw' version, with the cleaning and filtering turned off. For both sets of input data, sentences longer than 16 characters and shorter than 2 characters were removed.
 
 \section{Background}
 In order to implement this chatbot we will be using LSTM (Long short-term memory) neural networks.
@@ -101,10 +102,6 @@ We can see from the figure above that the cleaned dataset takes about 5 minutes 
 It is clear that cleaning the dataset doesn't have much of an effect on the overall performance of the network in terms of training accuracy. It does however improve the time it takes the network to train fairly significantly.
 
 \section{File Directory Structure}
-
-\section{References}
-
-\textbf{Cornell Movie -- Dialogs Corpus: } https://www.cs.cornell.edu/\textasciitilde cristian/Cornell\_Movie-Dialogs\_Corpus.html
 
 \newpage
 \large{Works Cited:}\\
