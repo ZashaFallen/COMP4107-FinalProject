@@ -48,6 +48,7 @@ The aim of this project is to determine what the effects of a cleaned data set a
 \tab 2. Overall proficiency at conversation.
 
 \section{Results and Analysis}
+\tab Before training can be done let us first look at the computational graphs of the model.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=120mm]{main_graph.png}
@@ -60,6 +61,14 @@ The aim of this project is to determine what the effects of a cleaned data set a
 	\caption{A look at the auxilliary nodes of the model. Note there are 24 EI units in total.\\(extends below the arrow)}
 	\label{fig:auxnodes}
 \end{figure}
+Training the network:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=120mm]{cost-clean-001.png}
+	\caption{Cost functions graph (using $\alpha = 0.001$)}
+	\label{fig:cc001}
+\end{figure}
+As you can see from the cost function above, it reaches equilibrium around 240 epochs at a minimum cost of just under 3.0.
 \section{Conclusion}
 
 \section{References}
