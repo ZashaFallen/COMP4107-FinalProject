@@ -37,7 +37,6 @@ In order to implement this chatbot we will be using LSTM (Long short-term memory
 	\caption{A barebones view of the different gates involved in an LSTM.\\{\tiny \url{https://raw.githubusercontent.com/torch/torch.github.io/master/blog/\_posts/images/LSTM.png}}}
 	\label{fig:lstm2}
 \end{figure}
-~\\~\\~\\~\\~\\	
 \tab We will be using a method called sequence to sequence learning where two neural networks (namely an encoder NN and a decoder NN) communicate with each other in order to convert sequences from one domain to sequences in another domain. In our case we will be working within the domains of $statement\rightarrow reply$.
 \begin{figure}[H]
 	\centering
@@ -55,7 +54,7 @@ The dataset that was chosen was Cornell University's Movie Dialogue Corpus.\cite
 The aim of this project is to determine what the effects of a cleaned data set are on the:\\
 \tab 1. Training time of an LSTM chatbot network\\
 \tab 2. Overall proficiency in training accuracy.
-
+\newpage
 \section{Results and Analysis}
 Before training can begin, let us first look at the computational graph of our model:
 \begin{figure}[H]
@@ -72,8 +71,9 @@ Before training can begin, let us first look at the computational graph of our m
 	\caption{A look at the auxilliary nodes of the model. Note there are 24 EI units in total.\\(extends below the arrow)}
 	\label{fig:auxnodes}
 \end{figure}
-
-Training
+\newpage
+\large{Training:}
+\normalsize{\\ \tab Training the network takes around 2 hours to reach 500 epoch (approx. 1 epoch every 15 seconds)}
 \begin{figure}[H]
 	\centering
 	\begin{subfigure}[b]{0.4\linewidth}
@@ -103,7 +103,7 @@ As you can see from the graph there isn't much improvement in terms of actuall t
 	\label{fig:cor001}
 \end{figure} 
 We can see from the figure above that the cleaned dataset takes about 5 minutes less to reach equilibrium. It also takes about 10 minutes less in order to reach 500 epochs. This is likely due to the fact that a clean dataset removes much of the verbosity out of the sentences, as well as unnecessary punctuation and overall longer or shorter sentances, so the network has a lot less fluff to deal with when training. 
-
+\newpage
 \section{Conclusion}
 It is clear that cleaning the dataset doesn't have much of an effect on the overall performance of the network in terms of training accuracy. It does however improve the time it takes the network to train fairly significantly. Meaning if you're strapped for time, or need to train the network multiple times using different hyperparameters, cleaning your dataset will be of significant benefit.
 
